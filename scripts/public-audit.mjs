@@ -10,6 +10,8 @@ import { fileURLToPath } from "node:url";
 const execFileAsync = promisify(execFile);
 const EXPORT_REPORT_NAME = ".moodle-changefeed-export.json";
 const TEXT_LIMIT_BYTES = 5 * 1024 * 1024;
+const IMPORT_PATTERN =
+  /(?:\bfrom\s+|\bimport\s*\(\s*|\bimport\s+)["']([^"']+)["']/gu;
 
 function finding(rule, filePath = null) {
   return filePath ? { rule, path: filePath } : { rule };
@@ -22,6 +24,7 @@ async function walkTree(root) {
     const entries = await readdir(directory, { withFileTypes: true });
     for (const entry of entries) {
       if (relativeDirectory === "" && entry.name === ".git") continue;
+      if (entry.name === "node_modules") continue;
       const relativePath = relativeDirectory
         ? `${relativeDirectory}/${entry.name}`
         : entry.name;
@@ -58,7 +61,7 @@ async function loadDenylist(denylistPath, requireDenylist) {
   return [...new Set(flattenDenylist(parsed))];
 }
 
-function inspectText(text, relativePath, denylist, findings) {
+function inspectText(text, relativePath, publicRoot, denylist, findings) {
   const secretPatterns = [
     /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/u,
     /(?:api[_-]?key|app[_-]?secret|client[_-]?secret|access[_-]?token|refresh[_-]?token|password)\s*[=:]\s*["']?(?!\s*(?:example|placeholder|redacted|<[^>]+>|\$\{))[^\s"']{16,}/iu,
@@ -73,6 +76,16 @@ function inspectText(text, relativePath, denylist, findings) {
   if (denylist.some((value) => text.toLocaleLowerCase("en-US").includes(value.toLocaleLowerCase("en-US")))) {
     findings.push(finding("denylist-match", relativePath));
   }
+  for (const match of text.matchAll(IMPORT_PATTERN)) {
+    const specifier = match[1];
+    if (!specifier.startsWith(".")) continue;
+    const sourceDirectory = path.dirname(path.join(publicRoot, ...relativePath.split("/")));
+    const resolved = path.resolve(sourceDirectory, specifier.split(/[?#]/u, 1)[0]);
+    const relative = path.relative(publicRoot, resolved);
+    if (relative === ".." || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) {
+      findings.push(finding("relative-import-outside-root", relativePath));
+    }
+  }
 }
 
 async function inspectGitMetadata(root, denylist, findings) {
@@ -84,7 +97,7 @@ async function inspectGitMetadata(root, denylist, findings) {
       ["-C", root, "log", "--format=%an%n%ae%n%cn%n%ce"],
       { encoding: "utf8", maxBuffer: 2 * 1024 * 1024 },
     );
-    inspectText(stdout, ".git/author-metadata", denylist, findings);
+    inspectText(stdout, ".git/author-metadata", root, denylist, findings);
   } catch (error) {
     if (error?.code !== "ENOENT") findings.push(finding("git-metadata-unreadable"));
   }
@@ -137,7 +150,7 @@ export async function auditPublicTree({
   for (const relativePath of tree.files) {
     const bytes = await readFile(path.join(publicRoot, ...relativePath.split("/")));
     if (bytes.byteLength > TEXT_LIMIT_BYTES || bytes.includes(0)) continue;
-    inspectText(bytes.toString("utf8"), relativePath, denylist, findings);
+    inspectText(bytes.toString("utf8"), relativePath, publicRoot, denylist, findings);
   }
   await inspectGitMetadata(publicRoot, denylist, findings);
 

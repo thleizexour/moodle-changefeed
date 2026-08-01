@@ -56,7 +56,6 @@
     "tests/demo.test.mjs",
     "tests/diff.test.mjs",
     "tests/docs-smoke.test.mjs",
-    "tests/ledger-compatibility.test.mjs",
     "tests/ledger.test.mjs",
     "tests/local-archive.test.mjs",
     "tests/mcp.test.mjs",

@@ -68,8 +68,8 @@
     },
     {
       "path": "public-manifest.json",
-      "bytes": 3679,
-      "sha256": "58e44d2e0afa412f0f9ff2297dcc14902fa1cd8af3d2c5b28527f0d4adfb36d8"
+      "bytes": 3636,
+      "sha256": "65c791317f43beebd2015b2c40d89f9f16b5e961330c9f520672a70a9f4e2546"
     },
     {
       "path": "schemas/change-feed-v1.schema.json",
@@ -88,8 +88,8 @@
     },
     {
       "path": "scripts/public-audit.mjs",
-      "bytes": 8465,
-      "sha256": "5c8590ee3d58829146f005cc2685a808fe83c5de7f7d55b6c2f54688a7a27112"
+      "bytes": 9187,
+      "sha256": "5008e12ff0ea166114241ade7562c6ef97dd95ac760b071850067f2815c80f7d"
     },
     {
       "path": "scripts/verify-release.mjs",
@@ -275,11 +275,6 @@
       "path": "tests/docs-smoke.test.mjs",
       "bytes": 3408,
       "sha256": "04ede8264c72677a0510908015371886b48be6a6d6769f4ce1ccd0e2d7fc15d5"
-    },
-    {
-      "path": "tests/ledger-compatibility.test.mjs",
-      "bytes": 2920,
-      "sha256": "ca3eb4abda5b06ef3c3b74524a153a691618e66ed774a64ffff1be0b7242e014"
     },
     {
       "path": "tests/ledger.test.mjs",
