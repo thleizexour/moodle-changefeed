@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://moodle-changefeed.dev/schemas/delivery-plan-v1.schema.json",
+  "title": "Moodle Delivery Plan v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "planHash",
+    "expiresAt",
+    "summary",
+    "operations"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "planHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "expiresAt": { "type": "string", "format": "date-time" },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["taskCount", "fileCount", "totalBytes"],
+      "properties": {
+        "taskCount": { "type": "integer", "minimum": 0 },
+        "fileCount": { "type": "integer", "minimum": 0 },
+        "totalBytes": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "operations": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "itemId",
+          "resourceId",
+          "expectedReviewVersion",
+          "contentHash",
+          "logicalArchiveSegments",
+          "targetType"
+        ],
+        "properties": {
+          "id": { "type": "string", "minLength": 16, "maxLength": 300 },
+          "itemId": { "type": "string", "minLength": 16, "maxLength": 300 },
+          "resourceId": {
+            "oneOf": [
+              { "type": "string", "minLength": 16, "maxLength": 300 },
+              { "type": "null" }
+            ]
+          },
+          "expectedReviewVersion": { "type": "integer", "minimum": 1 },
+          "contentHash": {
+            "oneOf": [
+              { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+              { "type": "null" }
+            ]
+          },
+          "logicalArchiveSegments": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 8,
+            "items": { "type": "string", "minLength": 1, "maxLength": 160 }
+          },
+          "targetType": { "enum": ["task", "archive_file"] }
+        }
+      }
+    }
+  }
+}

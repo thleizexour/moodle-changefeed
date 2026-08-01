@@ -1,0 +1,4 @@
+interface:
+  display_name: "Moodle Changefeed"
+  short_description: "Review and deliver Moodle changes safely"
+  default_prompt: "Use $moodle-changefeed to inspect Moodle changes and prepare reviewed delivery."

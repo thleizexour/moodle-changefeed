@@ -1,0 +1,16 @@
+.env*
+*.sqlite*
+*.db-wal
+*.db-shm
+/cache/
+/staging/
+/quarantine/
+/archive/
+/data/
+coverage/
+node_modules/
+*.tgz
+*.tar.gz
+*.log
+npm-debug.log*
+.DS_Store

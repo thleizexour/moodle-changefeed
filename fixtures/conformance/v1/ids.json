@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "object": {
+    "input": {
+      "siteUrl": "https://moodle.example.edu",
+      "courseId": "42",
+      "type": "assignment",
+      "sourceId": "9001"
+    },
+    "expected": "moodle-object:v1:29f001538959a6a7:42:assignment:9001"
+  },
+  "resource": {
+    "input": {
+      "siteUrl": "https://moodle.example.edu",
+      "courseId": "42",
+      "sourceFileId": "777"
+    },
+    "expected": "moodle-resource:v1:29f001538959a6a7:42:777"
+  },
+  "change": {
+    "input": {
+      "beforeHash": null,
+      "afterHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "changeKind": "added"
+    },
+    "expected": "moodle-change:v1:b60f0a20af3068fde8e1c02ebee20465"
+  },
+  "cursor": {
+    "input": 17,
+    "expected": "eyJzY2hlbWFWZXJzaW9uIjoxLCJzZXF1ZW5jZSI6MTd9"
+  }
+}

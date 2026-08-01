@@ -1,0 +1,48 @@
+{
+  "siteKey": "https://moodle.example.edu",
+  "capturedAt": "2026-08-01T00:05:00.000Z",
+  "courses": [
+    {
+      "id": 42,
+      "shortname": "DEMO101",
+      "fullname": "Anonymous Demo Course",
+      "term": "2026-S1"
+    }
+  ],
+  "coursePayloads": [
+    {
+      "courseId": 42,
+      "contents": [],
+      "forums": [],
+      "assignments": [
+        {
+          "id": 9001,
+          "name": "Demo Assignment",
+          "duedate": 1786233600,
+          "timemodified": 1785542700,
+          "intro": "Synthetic assignment body",
+          "introattachments": [
+            {
+              "id": 777,
+              "filename": "assignment-brief.txt",
+              "filesize": 38,
+              "mimetype": "text/plain",
+              "timemodified": 1785542700,
+              "fileurl": "https://moodle.example.edu/webservice/pluginfile.php/42/mod_assign/introattachment/1/assignment-brief.txt"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "icsEvents": [],
+  "complete": true,
+  "health": {
+    "status": "healthy",
+    "completeness": {
+      "resources": true,
+      "assignments": true,
+      "announcements": true
+    }
+  }
+}

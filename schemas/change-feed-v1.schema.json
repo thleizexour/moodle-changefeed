@@ -1,0 +1,227 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://moodle-changefeed.dev/schemas/change-feed-v1.schema.json",
+  "title": "Moodle Change Feed v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "generatedAt",
+    "cursor",
+    "health",
+    "counts",
+    "items"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "cursor": {
+      "oneOf": [
+        { "type": "string", "minLength": 1, "maxLength": 256 },
+        { "type": "null" }
+      ]
+    },
+    "health": { "$ref": "#/$defs/health" },
+    "counts": { "$ref": "#/$defs/counts" },
+    "items": {
+      "type": "array",
+      "maxItems": 100,
+      "items": { "$ref": "#/$defs/item" }
+    }
+  },
+  "$defs": {
+    "health": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "lastCompleteScanAt", "scanComplete"],
+      "properties": {
+        "status": {
+          "enum": ["healthy", "degraded", "error", "not_scanned"]
+        },
+        "lastCompleteScanAt": {
+          "oneOf": [
+            { "type": "string", "format": "date-time" },
+            { "type": "null" }
+          ]
+        },
+        "scanComplete": { "type": "boolean" }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "total",
+        "pending",
+        "approved",
+        "ignored",
+        "deferred",
+        "readyForDelivery",
+        "delivered",
+        "failed"
+      ],
+      "properties": {
+        "total": { "type": "integer", "minimum": 0 },
+        "pending": { "type": "integer", "minimum": 0 },
+        "approved": { "type": "integer", "minimum": 0 },
+        "ignored": { "type": "integer", "minimum": 0 },
+        "deferred": { "type": "integer", "minimum": 0 },
+        "readyForDelivery": { "type": "integer", "minimum": 0 },
+        "delivered": { "type": "integer", "minimum": 0 },
+        "failed": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "course": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "code", "name", "term"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "code": {
+          "oneOf": [
+            { "type": "string", "maxLength": 160 },
+            { "type": "null" }
+          ]
+        },
+        "name": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "term": {
+          "oneOf": [
+            { "type": "string", "maxLength": 160 },
+            { "type": "null" }
+          ]
+        }
+      }
+    },
+    "resourceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "fileName",
+        "size",
+        "mimeType",
+        "sha256",
+        "cacheStatus",
+        "deliveryStatus"
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 16, "maxLength": 300 },
+        "fileName": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "size": {
+          "oneOf": [
+            { "type": "integer", "minimum": 0 },
+            { "type": "null" }
+          ]
+        },
+        "mimeType": {
+          "oneOf": [
+            { "type": "string", "maxLength": 255 },
+            { "type": "null" }
+          ]
+        },
+        "sha256": {
+          "oneOf": [
+            { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+            { "type": "null" }
+          ]
+        },
+        "cacheStatus": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "deliveryStatus": { "type": "string", "minLength": 1, "maxLength": 80 }
+      }
+    },
+    "deliveryReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "targetType",
+        "deliveredAt",
+        "contentHash",
+        "externalRef"
+      ],
+      "properties": {
+        "status": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "targetType": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "deliveredAt": { "type": "string", "format": "date-time" },
+        "contentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "externalRef": { "type": "string", "minLength": 1, "maxLength": 500 }
+      }
+    },
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version",
+        "course",
+        "type",
+        "changeKind",
+        "title",
+        "dueAt",
+        "prioritySignals",
+        "reviewStatus",
+        "resourceRefs",
+        "deliveryReceipt"
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 16, "maxLength": 300 },
+        "version": { "type": "integer", "minimum": 1 },
+        "course": { "$ref": "#/$defs/course" },
+        "type": { "enum": ["assignment", "announcement", "resource"] },
+        "changeKind": {
+          "enum": [
+            "added",
+            "metadata_changed",
+            "content_changed",
+            "possibly_missing",
+            "access_lost",
+            "unchanged"
+          ]
+        },
+        "title": { "type": "string", "minLength": 1, "maxLength": 1000 },
+        "dueAt": {
+          "oneOf": [
+            { "type": "string", "format": "date-time" },
+            { "type": "null" }
+          ]
+        },
+        "prioritySignals": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "due_within_24h",
+              "due_within_7d",
+              "due_changed_earlier",
+              "due_changed_later",
+              "required_resource_changed",
+              "announcement_new",
+              "content_verification_required"
+            ]
+          }
+        },
+        "reviewStatus": {
+          "enum": [
+            "pending",
+            "approved",
+            "ignored",
+            "deferred",
+            "ready_for_delivery",
+            "delivered",
+            "failed"
+          ]
+        },
+        "resourceRefs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/resourceRef" }
+        },
+        "deliveryReceipt": {
+          "oneOf": [
+            { "$ref": "#/$defs/deliveryReceipt" },
+            { "type": "null" }
+          ]
+        }
+      }
+    }
+  }
+}

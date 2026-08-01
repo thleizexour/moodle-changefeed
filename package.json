@@ -1,0 +1,45 @@
+{
+  "name": "moodle-changefeed",
+  "version": "0.1.0-dev.0",
+  "private": true,
+  "type": "module",
+  "description": "Local-first Moodle change detection and human-in-the-loop delivery for agents",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "files": [
+    "src/",
+    "schemas/",
+    "skills/",
+    "fixtures/",
+    "scripts/",
+    "README.md",
+    "SECURITY.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "bin": {
+    "moodle-changefeed": "./src/cli/main.mjs"
+  },
+  "exports": {
+    ".": "./src/index.mjs",
+    "./contracts": "./src/core/contracts.mjs",
+    "./mcp": "./src/mcp/server.mjs",
+    "./adapters/moodle-mobile": "./src/adapters/moodle-mobile/index.mjs",
+    "./adapters/moodle-ics": "./src/adapters/moodle-ics/index.mjs",
+    "./adapters/local-archive": "./src/adapters/local-archive/index.mjs",
+    "./schemas/*": "./schemas/*"
+  },
+  "scripts": {
+    "test": "node --test",
+    "demo": "node src/cli/main.mjs demo --fixture anonymous/basic",
+    "audit:public": "node scripts/public-audit.mjs",
+    "verify:release": "node scripts/verify-release.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "better-sqlite3": "13.0.1",
+    "zod": "^3.25.76"
+  }
+}

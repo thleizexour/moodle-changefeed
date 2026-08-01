@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://moodle-changefeed.dev/schemas/review-action-v1.schema.json",
+  "title": "Moodle Review Action v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "actions"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "actions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "expectedVersion", "decision"],
+        "properties": {
+          "id": { "type": "string", "minLength": 16, "maxLength": 300 },
+          "expectedVersion": { "type": "integer", "minimum": 1 },
+          "decision": { "enum": ["approve", "ignore", "defer", "resume"] }
+        }
+      }
+    }
+  }
+}

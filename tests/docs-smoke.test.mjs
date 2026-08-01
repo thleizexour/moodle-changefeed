@@ -1,0 +1,81 @@
+import assert from "node:assert/strict";
+import { execFile } from "node:child_process";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { promisify } from "node:util";
+import test from "node:test";
+
+const execute = promisify(execFile);
+const packageRoot = path.resolve(fileURLToPath(new URL("..", import.meta.url)));
+
+async function text(relativePath) {
+  return readFile(path.join(packageRoot, relativePath), "utf8");
+}
+
+test("README quickstart commands execute without an account", async () => {
+  const readme = await text("README.md");
+  const section = readme.match(/## 60-second anonymous demo([\s\S]*?)(?=\n## )/)?.[1];
+  assert.ok(section, "README must contain the exact anonymous demo section");
+  const commands = [...section.matchAll(/`([^`\n]+)`/g)].map((match) => match[1]);
+  assert.deepEqual(commands, [
+    "node src/cli/main.mjs --help",
+    "node src/cli/main.mjs demo --fixture anonymous/basic"
+  ]);
+  for (const command of commands) {
+    const [executable, ...args] = command.split(" ");
+    const result = await execute(executable, args, {
+      cwd: packageRoot,
+      env: { ...process.env, MOODLE_CHANGEFEED_TOKEN: "" }
+    });
+    assert.equal(result.stderr, "");
+    assert.doesNotMatch(result.stdout, /\/Users\/|MOODLE_CHANGEFEED_TOKEN=|wstoken/i);
+  }
+});
+
+test("skill routes agents through stable bounded tools", async () => {
+  const skill = await text("skills/moodle-changefeed/SKILL.md");
+  for (const required of [
+    "agent_bootstrap",
+    "list_moodle_changefeed_capabilities",
+    "get_moodle_change_feed",
+    "set_moodle_review_decision",
+    "prepare_moodle_delivery",
+    "deliver_moodle_batch"
+  ]) {
+    assert.match(skill, new RegExp(`\\b${required}\\b`));
+  }
+  assert.match(skill, /review.*before.*delivery|审核.*交付/is);
+  assert.match(skill, /stop.*confirmation|停止.*确认/is);
+  assert.doesNotMatch(skill, /sqlite3|ledger\.sqlite|SELECT /i);
+});
+
+test("public docs and repository policy contain release safety boundaries", async () => {
+  const [readme, security, license, ignore, workflow] = await Promise.all([
+    text("README.md"),
+    text("SECURITY.md"),
+    text("LICENSE"),
+    text(".gitignore"),
+    text(".github/workflows/ci.yml")
+  ]);
+  for (const heading of [
+    "Problem", "60-second anonymous demo", "Architecture", "CLI", "MCP configuration",
+    "Source capability matrix", "Review and confirmation model", "Local archive",
+    "Custom adapter", "Privacy and compliance limits", "Development", "Roadmap"
+  ]) {
+    assert.match(readme, new RegExp(`## ${heading.replace(/[.*+?^${}()|[\\]\\]/g, "\\$&")}`));
+  }
+  assert.match(readme, /not legal advice/i);
+  assert.match(security, /never.*write.*Moodle|Moodle writes.*unsupported/is);
+  assert.match(license, /Copyright \(c\) 2026 moodle-changefeed contributors/);
+  for (const pattern of [".env*", "*.sqlite*", "node_modules/", "cache/", "staging/", "*.tgz"] ) {
+    assert.ok(ignore.includes(pattern), `missing ignore pattern: ${pattern}`);
+  }
+  for (const required of [
+    "actions/checkout", "actions/setup-node", "npm ci", "npm test", "npm run demo",
+    "npm run audit:public", "npm run verify:release", "ubuntu-latest", "macos-latest", "22"
+  ]) {
+    assert.ok(workflow.includes(required), `missing CI step: ${required}`);
+  }
+  assert.doesNotMatch(workflow, /secrets\.|upload-artifact/);
+});

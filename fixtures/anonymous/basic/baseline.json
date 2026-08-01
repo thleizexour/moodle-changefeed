@@ -1,0 +1,39 @@
+{
+  "siteKey": "https://moodle.example.edu",
+  "capturedAt": "2026-08-01T00:00:00.000Z",
+  "courses": [
+    {
+      "id": 42,
+      "shortname": "DEMO101",
+      "fullname": "Anonymous Demo Course",
+      "term": "2026-S1"
+    }
+  ],
+  "coursePayloads": [
+    {
+      "courseId": 42,
+      "contents": [],
+      "forums": [],
+      "assignments": [
+        {
+          "id": 9001,
+          "name": "Demo Assignment",
+          "duedate": 1786147200,
+          "timemodified": 1785542400,
+          "intro": "Synthetic assignment body",
+          "introattachments": []
+        }
+      ]
+    }
+  ],
+  "icsEvents": [],
+  "complete": true,
+  "health": {
+    "status": "healthy",
+    "completeness": {
+      "resources": true,
+      "assignments": true,
+      "announcements": true
+    }
+  }
+}

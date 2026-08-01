@@ -1,0 +1,330 @@
+{
+  "schemaVersion": 1,
+  "files": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "bytes": 525,
+      "sha256": "b64e20105ac0f0860062ed28291ffa72de50a50db34f597409484271e4a9cc53"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 152,
+      "sha256": "514e42889f37adbd38f091e1fe8cbd379b5132ffb7071ee1ae633826b99f28e2"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "bytes": 577,
+      "sha256": "d5390e14460e21062e43ea07cd7a359c33cc9faac04f06c1d55b94ec412400cb"
+    },
+    {
+      "path": "LICENSE",
+      "bytes": 1087,
+      "sha256": "abcdb39022f59f666335848aee63a59d2268bbf3e9b43f81397916b5326c2816"
+    },
+    {
+      "path": "README.md",
+      "bytes": 5564,
+      "sha256": "541a483ea61f5e750c678fcdfdc5812748ee26995016885454e09dbec9083e07"
+    },
+    {
+      "path": "SECURITY.md",
+      "bytes": 1736,
+      "sha256": "ffb09b4cc2400a93e47dbd5455bf748c50f0bf1b816d7eadd1dba50b7ed816fb"
+    },
+    {
+      "path": "examples/custom-adapter/index.mjs",
+      "bytes": 1346,
+      "sha256": "1b3542d4a63c4795fd07cadf3603439b9529666469e28f0cf6dec8bc5f86cee0"
+    },
+    {
+      "path": "fixtures/anonymous/basic/baseline.json",
+      "bytes": 791,
+      "sha256": "d5d1725123f92c55709ab137396fe6159ee80ae2ff6452f4a44df055524d69ae"
+    },
+    {
+      "path": "fixtures/anonymous/basic/changed.json",
+      "bytes": 1150,
+      "sha256": "33f4b816c604726083f43a7cce605605edb1b8ab317cdfb5cb5a8e8cd25414cb"
+    },
+    {
+      "path": "fixtures/anonymous/basic/files/assignment-brief.txt",
+      "bytes": 38,
+      "sha256": "78f0dd33a1979f4f74e9f1e599b6c8982c965bef6aaec4ecdfd4a3fb4b6b4213"
+    },
+    {
+      "path": "fixtures/conformance/v1/ids.json",
+      "bytes": 813,
+      "sha256": "667d398a328e424168a21a3cd6c55b8ee52466b768f0bc128935b22704b22e98"
+    },
+    {
+      "path": "package-lock.json",
+      "bytes": 42583,
+      "sha256": "d0a2f73f04dc2b01d6dbe90d3076a58a5e89a1185acda1b60e4bcc23a206c1ab"
+    },
+    {
+      "path": "package.json",
+      "bytes": 1216,
+      "sha256": "1379fcc7b8221381aa38d2b1eb82693f35c3b8f0fa70ef8996b1f84c25aa3560"
+    },
+    {
+      "path": "public-manifest.json",
+      "bytes": 3679,
+      "sha256": "58e44d2e0afa412f0f9ff2297dcc14902fa1cd8af3d2c5b28527f0d4adfb36d8"
+    },
+    {
+      "path": "schemas/change-feed-v1.schema.json",
+      "bytes": 6344,
+      "sha256": "102424a3cff78f030178e0ccec9174c55189f3627a2e99ec903c968bbd58ea0d"
+    },
+    {
+      "path": "schemas/delivery-plan-v1.schema.json",
+      "bytes": 2156,
+      "sha256": "ab360aa9945f7330cd123f51a2fcc2b6d27bd4f1bdb07ba5e288cec662056ec9"
+    },
+    {
+      "path": "schemas/review-action-v1.schema.json",
+      "bytes": 825,
+      "sha256": "f6b5a109496a66f705f6c9ed89592cfdcf780cc6b80026fbbfbb7f589f55602d"
+    },
+    {
+      "path": "scripts/public-audit.mjs",
+      "bytes": 8465,
+      "sha256": "5c8590ee3d58829146f005cc2685a808fe83c5de7f7d55b6c2f54688a7a27112"
+    },
+    {
+      "path": "scripts/verify-release.mjs",
+      "bytes": 1354,
+      "sha256": "2395226111e23bc7d3bb0c018dc6fb8f27b3b6d9a4b1ee748314cfb4447dff30"
+    },
+    {
+      "path": "skills/moodle-changefeed/SKILL.md",
+      "bytes": 2864,
+      "sha256": "61499eb199ddc817d14637d4ce300f53d84a0829f405a5616940341eea0a10b3"
+    },
+    {
+      "path": "skills/moodle-changefeed/agents/openai.yaml",
+      "bytes": 211,
+      "sha256": "d732932cad6ac48e6a8bc662299b10a1617eee5c22a9fe932a3d42c5168cff83"
+    },
+    {
+      "path": "src/adapters/local-archive/index.mjs",
+      "bytes": 5472,
+      "sha256": "1c2cb180317ad4cc999721b4cc8b35b0dbb68233b513f114c8d6b02d516911d9"
+    },
+    {
+      "path": "src/adapters/moodle-ics/index.mjs",
+      "bytes": 1229,
+      "sha256": "36ce94d552578cdb96f48a3956e617204639b751b2b48baf19a65af4265c76d0"
+    },
+    {
+      "path": "src/adapters/moodle-ics/parse.mjs",
+      "bytes": 2831,
+      "sha256": "c97f2e1d5e6506b93a447805f4018880be12bf7fc71bf81d2a0fa8f8e1ce9026"
+    },
+    {
+      "path": "src/adapters/moodle-mobile/client.mjs",
+      "bytes": 6398,
+      "sha256": "b112e21af69f6e5c2bca2cacfe368aa28111459efa4e25e9491bef42a40e0d45"
+    },
+    {
+      "path": "src/adapters/moodle-mobile/index.mjs",
+      "bytes": 68,
+      "sha256": "2b984b3b43cee22657e0c94d159f2619a8c59630586836768f0f2703a06cf511"
+    },
+    {
+      "path": "src/adapters/moodle-mobile/source-adapter.mjs",
+      "bytes": 7475,
+      "sha256": "bac31f7a074046a303173548035a63ad3bdc67ba2f6925e2ee7a199ef277edfe"
+    },
+    {
+      "path": "src/cache/resource-cache.mjs",
+      "bytes": 8258,
+      "sha256": "404012d22889c7701dbb2c24c173c138542fe94354d63bd5a3206282380bdd7c"
+    },
+    {
+      "path": "src/capabilities.mjs",
+      "bytes": 4243,
+      "sha256": "6ccbfda7ca3e3ef7879011fad8fad210518cd09719adfce261f798a17add1b85"
+    },
+    {
+      "path": "src/cli/main.mjs",
+      "bytes": 8869,
+      "sha256": "9fb122bbd90c619278572bd61d9e352e0234c7278a8b9e5288054307e19f7bde"
+    },
+    {
+      "path": "src/cli/parse.mjs",
+      "bytes": 6599,
+      "sha256": "5e96ad73ab3246b61377215b5ec95db85139cf3789ea9423a387e05f92e390af"
+    },
+    {
+      "path": "src/config.mjs",
+      "bytes": 4562,
+      "sha256": "fb5f622e0e121545ba5efd64555119966fdfea9b84080b49a2f5480382d14476"
+    },
+    {
+      "path": "src/core/confirmation.mjs",
+      "bytes": 1236,
+      "sha256": "c03ebb6b238b13b4867389389e8a810e3e0b06053501028879755f0d6f97e6b1"
+    },
+    {
+      "path": "src/core/contracts.mjs",
+      "bytes": 5262,
+      "sha256": "04718e7cb84e5acf04bd73a730aadd6ec359c9b6940f0607275d5daa26e9456d"
+    },
+    {
+      "path": "src/core/delivery-coordinator.mjs",
+      "bytes": 9920,
+      "sha256": "aa98612c64df8cd1ce8c74b06971ff53a03828793c89e95cd205df716745475e"
+    },
+    {
+      "path": "src/core/determinism.mjs",
+      "bytes": 1462,
+      "sha256": "e84c1d5ac64c203949696028f406ba526ca5a9801e3e943652b76d9e32f41b67"
+    },
+    {
+      "path": "src/core/diff.mjs",
+      "bytes": 3475,
+      "sha256": "ff33ec8806be3e19eccb548d3ec01ac489d277953b052edad2901611f166ac2a"
+    },
+    {
+      "path": "src/core/errors.mjs",
+      "bytes": 743,
+      "sha256": "01836d749fc88a49ecb29cce6dd3b40450555de4a90b835e5c3c339dad04dd1b"
+    },
+    {
+      "path": "src/core/ledger-backup.mjs",
+      "bytes": 2471,
+      "sha256": "8ec46e60e26d5ce027ef8b36d827dbfbe606a758d4bd54c0558c5e374b9056ae"
+    },
+    {
+      "path": "src/core/ledger.mjs",
+      "bytes": 25110,
+      "sha256": "241e54a2941ef73bf0eab13d6ba55cc19876eb40176bb182dadff297e62b22fe"
+    },
+    {
+      "path": "src/core/normalize.mjs",
+      "bytes": 11379,
+      "sha256": "6dc1737b4e5ce2458eb12bcabec75d5041fc4b557a99b9f0e08b6a90fed8f6b1"
+    },
+    {
+      "path": "src/core/process-lock.mjs",
+      "bytes": 1647,
+      "sha256": "6e86a8d6b65fb69f641d9e78a66a3254ee59d48f5df03b8af67201d8449f541e"
+    },
+    {
+      "path": "src/core/service.mjs",
+      "bytes": 12009,
+      "sha256": "5d79a63ad2a3757a28a683527f7f07d20648a9509a50bac78069941b940b63b4"
+    },
+    {
+      "path": "src/index.mjs",
+      "bytes": 630,
+      "sha256": "243c44cc45e221024fb56735c9682cc9865e940cccc294ba52638332ac623fbd"
+    },
+    {
+      "path": "src/mcp/server.mjs",
+      "bytes": 1604,
+      "sha256": "6e288f4356c81c9321eeba519c34384809847f179be03d9bc49582a98edabedd"
+    },
+    {
+      "path": "src/mcp/tools.mjs",
+      "bytes": 5531,
+      "sha256": "53629fdbaeb5b3e44d687e1abc91ca3f902155fdeb780d39613f9345aa0fe4a7"
+    },
+    {
+      "path": "src/public-boundary.mjs",
+      "bytes": 2431,
+      "sha256": "16b8b7c08c186272d13cc3bee1e7e7243cbed28b1da8013a5815747574beab39"
+    },
+    {
+      "path": "src/runtime.mjs",
+      "bytes": 4719,
+      "sha256": "f7339d799ee670c34a613345a960d417cffa7f10799af0d9461e42f90f3d0bf1"
+    },
+    {
+      "path": "tests/cli-mcp-parity.test.mjs",
+      "bytes": 1202,
+      "sha256": "9f1a469483b68ec1446a0ad7efa1b69229928869e173a63502d1c1d4f80989d9"
+    },
+    {
+      "path": "tests/cli.test.mjs",
+      "bytes": 3334,
+      "sha256": "579425a06a153529556a99b35815b5d4eafc8d72c22bf756986bfd272eb8fa17"
+    },
+    {
+      "path": "tests/conformance.test.mjs",
+      "bytes": 5428,
+      "sha256": "b7869be639fe7f76131f96964dad917f7f0612ffab289b3d67a008f5946ab272"
+    },
+    {
+      "path": "tests/delivery-coordinator.test.mjs",
+      "bytes": 4704,
+      "sha256": "222f11b69e099fa3f3027135a564b9ea4f84908476a51458643a16414117cf2b"
+    },
+    {
+      "path": "tests/demo.test.mjs",
+      "bytes": 786,
+      "sha256": "d5242d680caeb032788568fb6db3a97d3d5eb8430c3183fe276c05b34cebae52"
+    },
+    {
+      "path": "tests/diff.test.mjs",
+      "bytes": 2363,
+      "sha256": "c06335d706d95a70f5990c7cde5b37588e7c468eb0a669804e56180a30a2cfa4"
+    },
+    {
+      "path": "tests/docs-smoke.test.mjs",
+      "bytes": 3408,
+      "sha256": "04ede8264c72677a0510908015371886b48be6a6d6769f4ce1ccd0e2d7fc15d5"
+    },
+    {
+      "path": "tests/ledger-compatibility.test.mjs",
+      "bytes": 2920,
+      "sha256": "ca3eb4abda5b06ef3c3b74524a153a691618e66ed774a64ffff1be0b7242e014"
+    },
+    {
+      "path": "tests/ledger.test.mjs",
+      "bytes": 3073,
+      "sha256": "ffd4c59ac84aadbc355cb0336fcad051e0418964bb30ddae9c9450d01f068da3"
+    },
+    {
+      "path": "tests/local-archive.test.mjs",
+      "bytes": 2767,
+      "sha256": "084752d9b755bb45fdb1dcd5a923614885fe328b84f34f37c34f1f63ee37ceac"
+    },
+    {
+      "path": "tests/mcp.test.mjs",
+      "bytes": 3639,
+      "sha256": "3b06f70f4b4503eaea6d82973962298a1496f919da20554101997a12c2bcbc4d"
+    },
+    {
+      "path": "tests/moodle-ics-adapter.test.mjs",
+      "bytes": 1375,
+      "sha256": "4a4fb84f59f96c671d2ee9ed88c9a2d8c4b4265708d684f219f9c6aa3fedc9d4"
+    },
+    {
+      "path": "tests/moodle-mobile-adapter.test.mjs",
+      "bytes": 3311,
+      "sha256": "5ddb170de0acf450c43cc704aea44aa99eeb3dfe4feff294ed89b50440615926"
+    },
+    {
+      "path": "tests/normalize.test.mjs",
+      "bytes": 3911,
+      "sha256": "452aa52a9197c580bb5327e7fbc24c34f0cd54ee57ee757efea93d078a1b7cc5"
+    },
+    {
+      "path": "tests/public-boundary.test.mjs",
+      "bytes": 3309,
+      "sha256": "1db88a599034989ae5ac6fb3794bdfa0f38852b42bc4fd8a0e398e5dc36bbd13"
+    },
+    {
+      "path": "tests/resource-cache.test.mjs",
+      "bytes": 3072,
+      "sha256": "2ddec4281e2e6f22312ad9d8de2ab66653744ce77015603089f25e3b51ab28cc"
+    },
+    {
+      "path": "tests/service.test.mjs",
+      "bytes": 4543,
+      "sha256": "8b3b29020a6fe9483c45db18d8dfdf8c719a798d0f5b3e98dae8c97dfa9169fa"
+    }
+  ]
+}
