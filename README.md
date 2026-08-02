@@ -21,15 +21,34 @@ The public core is one Node.js ESM package:
 
 CLI and MCP call the same runtime façade. Stable IDs, cursors, plan hashes, cache verification, and optimistic review transitions are implemented in code rather than prompts.
 
+## Connect a Moodle site
+
+The user-visible onboarding sequence is: enter the Moodle site, authorize with the institution when prompted, receive the connected message, then scan.
+
+1. Enter the site:
+
+   ```text
+   moodle-changefeed bootstrap --site-url https://moodle.example.edu
+   ```
+
+2. Complete the institution's authorization flow through the host integration, then run the same command again. The host owns credential acquisition and storage; this command never accepts a password or token in argv.
+3. After the command reports that the site is connected, run `moodle-changefeed sync`.
+
 ## CLI
 
-Set non-secret configuration with `MOODLE_CHANGEFEED_SITE_URL`, `MOODLE_CHANGEFEED_DATA_DIR`, and `MOODLE_CHANGEFEED_ARCHIVE_ROOT`. Supply the Web Service token only through `MOODLE_CHANGEFEED_TOKEN`; an optional private calendar URL uses `MOODLE_CHANGEFEED_ICS_URL`. The CLI rejects Moodle secrets in argv.
+Set non-secret configuration with `MOODLE_CHANGEFEED_SITE_URL`, `MOODLE_CHANGEFEED_DATA_DIR`, and `MOODLE_CHANGEFEED_ARCHIVE_ROOT`. The host completes authorization and supplies the site-bound Web Service token through its credential provider or `MOODLE_CHANGEFEED_TOKEN`; an optional private calendar URL uses `MOODLE_CHANGEFEED_ICS_URL`. The CLI rejects Moodle secrets in argv.
 
 Run `moodle-changefeed bootstrap`, then `moodle-changefeed sync`, `moodle-changefeed feed`, and `moodle-changefeed status`. Use `moodle-changefeed --help` for the bounded review, cache, and delivery arguments.
 
 `sync` returns only health and aggregate change counts. Per-item course and resource details remain behind the bounded, paginated `feed` and `review show` commands.
 
 Target writes remain disabled unless `MOODLE_CHANGEFEED_WRITE_ENABLED=true`. Interactive delivery displays the plan and requires the exact plan hash. Non-interactive delivery requires a host confirmation provider.
+
+### Bootstrap API contract
+
+Automation should route on `connection.canScan`, not on prose or a guessed Moodle version. `authorization_required` has `canScan=false`; `compatible` and `compatible_no_courses` have `canScan=true`. Call scan only when `canScan` is true.
+
+Optional source features are checked lazily. An operation-level `capability_unavailable` error limits only that optional feature; callers may continue using unrelated available capabilities. It does not make an otherwise compatible site unsupported.
 
 ## MCP configuration
 

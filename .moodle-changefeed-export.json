@@ -23,13 +23,13 @@
     },
     {
       "path": "README.md",
-      "bytes": 5564,
-      "sha256": "541a483ea61f5e750c678fcdfdc5812748ee26995016885454e09dbec9083e07"
+      "bytes": 6747,
+      "sha256": "76082cf359500847db30b20b139274662757510db3141352fc3f7c303ff3785b"
     },
     {
       "path": "SECURITY.md",
-      "bytes": 1736,
-      "sha256": "ffb09b4cc2400a93e47dbd5455bf748c50f0bf1b816d7eadd1dba50b7ed816fb"
+      "bytes": 2481,
+      "sha256": "3ae541706f334e854f13e96bb27bc45037e3720e2fb1bea40993c20479467ecb"
     },
     {
       "path": "examples/custom-adapter/index.mjs",
@@ -68,8 +68,8 @@
     },
     {
       "path": "public-manifest.json",
-      "bytes": 3636,
-      "sha256": "65c791317f43beebd2015b2c40d89f9f16b5e961330c9f520672a70a9f4e2546"
+      "bytes": 3724,
+      "sha256": "32806e7711679a6ceb02a57eef3cc2ae75441806837b71f305f940b4cfd1d371"
     },
     {
       "path": "schemas/change-feed-v1.schema.json",
@@ -98,8 +98,8 @@
     },
     {
       "path": "skills/moodle-changefeed/SKILL.md",
-      "bytes": 2864,
-      "sha256": "61499eb199ddc817d14637d4ce300f53d84a0829f405a5616940341eea0a10b3"
+      "bytes": 3992,
+      "sha256": "0295eebb509447ca9f2ce548d02317d7f65984977d34f0ed87bda735426baf45"
     },
     {
       "path": "skills/moodle-changefeed/agents/openai.yaml",
@@ -123,8 +123,8 @@
     },
     {
       "path": "src/adapters/moodle-mobile/client.mjs",
-      "bytes": 6398,
-      "sha256": "b112e21af69f6e5c2bca2cacfe368aa28111459efa4e25e9491bef42a40e0d45"
+      "bytes": 6796,
+      "sha256": "2df56e9426777a25aa393b7ce2f32e10063cf968d1c24dc8a1e139b79d79e727"
     },
     {
       "path": "src/adapters/moodle-mobile/index.mjs",
@@ -133,8 +133,8 @@
     },
     {
       "path": "src/adapters/moodle-mobile/source-adapter.mjs",
-      "bytes": 7475,
-      "sha256": "bac31f7a074046a303173548035a63ad3bdc67ba2f6925e2ee7a199ef277edfe"
+      "bytes": 7566,
+      "sha256": "0175e173ac8d2517ec7849767880685fab697fbb5449fff1ad3356a3844d9f99"
     },
     {
       "path": "src/cache/resource-cache.mjs",
@@ -143,23 +143,23 @@
     },
     {
       "path": "src/capabilities.mjs",
-      "bytes": 4243,
-      "sha256": "6ccbfda7ca3e3ef7879011fad8fad210518cd09719adfce261f798a17add1b85"
+      "bytes": 4727,
+      "sha256": "50236e45db8c6a5f85c1f9236885e990003acf411b4f9f70d399b8aa40435fa1"
     },
     {
       "path": "src/cli/main.mjs",
-      "bytes": 8869,
-      "sha256": "9fb122bbd90c619278572bd61d9e352e0234c7278a8b9e5288054307e19f7bde"
+      "bytes": 11203,
+      "sha256": "fd53230766b9dc3e251237aebdef749ffe59f7b497b3f274e07884d2d4e2dddb"
     },
     {
       "path": "src/cli/parse.mjs",
-      "bytes": 6599,
-      "sha256": "5e96ad73ab3246b61377215b5ec95db85139cf3789ea9423a387e05f92e390af"
+      "bytes": 6948,
+      "sha256": "83f853584477b011306b1ece7998497067721092a49d1d09cce81f816a064256"
     },
     {
       "path": "src/config.mjs",
-      "bytes": 4562,
-      "sha256": "fb5f622e0e121545ba5efd64555119966fdfea9b84080b49a2f5480382d14476"
+      "bytes": 5218,
+      "sha256": "130226df670d6acf8530957ccd81ed0b705c2eb8592c093960948cfca0bfee7c"
     },
     {
       "path": "src/core/confirmation.mjs",
@@ -217,19 +217,24 @@
       "sha256": "5d79a63ad2a3757a28a683527f7f07d20648a9509a50bac78069941b940b63b4"
     },
     {
+      "path": "src/entry-probe.mjs",
+      "bytes": 14415,
+      "sha256": "2eefd46c4d231e0438538293fe84ea32d80b982af8055023bca3d2c7f1f6623f"
+    },
+    {
       "path": "src/index.mjs",
-      "bytes": 630,
-      "sha256": "243c44cc45e221024fb56735c9682cc9865e940cccc294ba52638332ac623fbd"
+      "bytes": 665,
+      "sha256": "1209f000dae5fea21b6c60633aa4cb65ffcaa48994f68b835a8fc3b8a6e39ee5"
     },
     {
       "path": "src/mcp/server.mjs",
-      "bytes": 1604,
-      "sha256": "6e288f4356c81c9321eeba519c34384809847f179be03d9bc49582a98edabedd"
+      "bytes": 2267,
+      "sha256": "0e258e66eb28124ecb5c9e3bb17e77283623607aaf59cd037d4db777e61d4d18"
     },
     {
       "path": "src/mcp/tools.mjs",
-      "bytes": 5531,
-      "sha256": "53629fdbaeb5b3e44d687e1abc91ca3f902155fdeb780d39613f9345aa0fe4a7"
+      "bytes": 6603,
+      "sha256": "9c453588c993bbda88c991220e5065e56716eb83d207e64cc2f9fffe33812ede"
     },
     {
       "path": "src/public-boundary.mjs",
@@ -243,13 +248,13 @@
     },
     {
       "path": "tests/cli-mcp-parity.test.mjs",
-      "bytes": 1202,
-      "sha256": "9f1a469483b68ec1446a0ad7efa1b69229928869e173a63502d1c1d4f80989d9"
+      "bytes": 6056,
+      "sha256": "5256dab73a213f28dd4642113a4559846621ae87684d6803c8d1d7f16008b088"
     },
     {
       "path": "tests/cli.test.mjs",
-      "bytes": 3334,
-      "sha256": "579425a06a153529556a99b35815b5d4eafc8d72c22bf756986bfd272eb8fa17"
+      "bytes": 8092,
+      "sha256": "09747f1634702da800076d4d18073584a689a030c0e484dba1af1bc399868cb0"
     },
     {
       "path": "tests/conformance.test.mjs",
@@ -273,8 +278,13 @@
     },
     {
       "path": "tests/docs-smoke.test.mjs",
-      "bytes": 3408,
-      "sha256": "04ede8264c72677a0510908015371886b48be6a6d6769f4ce1ccd0e2d7fc15d5"
+      "bytes": 6437,
+      "sha256": "9e5d2fd5074eefce9b9a7f95c1641d103c9806f06616e2171c15d861092b31e5"
+    },
+    {
+      "path": "tests/entry-probe.test.mjs",
+      "bytes": 20844,
+      "sha256": "8baf15da2a7e6fe08f4234302b0ad6d7ab27e74badc51aa63f5c724f7857745c"
     },
     {
       "path": "tests/ledger.test.mjs",
@@ -288,8 +298,8 @@
     },
     {
       "path": "tests/mcp.test.mjs",
-      "bytes": 3639,
-      "sha256": "3b06f70f4b4503eaea6d82973962298a1496f919da20554101997a12c2bcbc4d"
+      "bytes": 10716,
+      "sha256": "d42ff36b94bc4a4dc8350e278023ced57aee4429a1e3d3beb746b25b6940cb35"
     },
     {
       "path": "tests/moodle-ics-adapter.test.mjs",
@@ -298,8 +308,8 @@
     },
     {
       "path": "tests/moodle-mobile-adapter.test.mjs",
-      "bytes": 3311,
-      "sha256": "5ddb170de0acf450c43cc704aea44aa99eeb3dfe4feff294ed89b50440615926"
+      "bytes": 7511,
+      "sha256": "bd73bf580937dbb104a905b2743efbc2da3c7ce7e77f8889b638e1cfa7e384e4"
     },
     {
       "path": "tests/normalize.test.mjs",

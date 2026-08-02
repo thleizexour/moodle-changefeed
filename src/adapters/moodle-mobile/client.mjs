@@ -16,6 +16,14 @@ export const OPTIONAL_FUNCTIONS = Object.freeze([
   "mod_quiz_get_quizzes_by_courses"
 ]);
 
+const CAPABILITY_UNAVAILABLE_ERROR_CODES = new Set([
+  "wsfunctionnotavailable",
+  "servicenotavailable",
+  "notavailable",
+  "accessdenied",
+  "accessexception"
+]);
+
 export const MOODLE_READ_ONLY_FUNCTIONS = new Set([
   ...REQUIRED_FUNCTIONS,
   ...OPTIONAL_FUNCTIONS
@@ -125,8 +133,14 @@ export class MoodleMobileClient {
       });
     }
     if (data?.exception || data?.errorcode) {
+      const errorCode = data.errorcode || "";
       throw new MoodleWebServiceError("Moodle rejected the read-only request", {
-        errorCode: data.errorcode || "",
+        code:
+          OPTIONAL_FUNCTIONS.includes(functionName) &&
+          CAPABILITY_UNAVAILABLE_ERROR_CODES.has(errorCode)
+            ? "capability_unavailable"
+            : "moodle_request_failed",
+        errorCode,
         functionName
       });
     }

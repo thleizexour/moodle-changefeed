@@ -50,6 +50,78 @@ test("skill routes agents through stable bounded tools", async () => {
   assert.doesNotMatch(skill, /sqlite3|ledger\.sqlite|SELECT /i);
 });
 
+test("README and skill document generic compatibility onboarding", async () => {
+  const [readme, skill] = await Promise.all([
+    text("README.md"),
+    text("skills/moodle-changefeed/SKILL.md")
+  ]);
+
+  const readmeOnboarding = readme.match(
+    /## Connect a Moodle site([\s\S]*?)(?=\n## CLI)/
+  )?.[1];
+  const readmeApi = readme.match(
+    /### Bootstrap API contract([\s\S]*?)(?=\n## MCP configuration)/
+  )?.[1];
+  const skillOnboarding = skill.match(
+    /## Connection onboarding([\s\S]*?)(?=\n## API routing)/
+  )?.[1];
+  const skillApi = skill.match(
+    /## API routing([\s\S]*?)(?=\n## Changefeed workflow)/
+  )?.[1];
+
+  assert.ok(readmeOnboarding, "README missing the user-visible onboarding section");
+  assert.ok(readmeApi, "README missing the bootstrap API section");
+  assert.ok(skillOnboarding, "skill missing the connection onboarding section");
+  assert.ok(skillApi, "skill missing the API routing section");
+  for (const visibleFlow of [readmeOnboarding, skillOnboarding]) {
+    assert.match(visibleFlow, /site[\s\S]*authoriz[\s\S]*connected[\s\S]*scan/i);
+    assert.doesNotMatch(
+      visibleFlow,
+      /authorization_required|compatible(?:_no_courses)?|capability_unavailable/
+    );
+    assert.doesNotMatch(
+      visibleFlow,
+      /\b(?:core|mod)_[a-z0-9_]+\b/i,
+      "the onboarding checklist must not show a Web Service function checklist"
+    );
+  }
+  assert.match(
+    skillOnboarding,
+    /canScan` is false[\s\S]*complete user-facing response is `connection\.message`[\s\S]*do not call scan/i
+  );
+  assert.match(skillOnboarding, /canScan` is true[\s\S]*continue to scan/i);
+  assert.match(
+    skillApi,
+    /capability_unavailable[\s\S]*optional feature[\s\S]*continue unrelated available capabilities/i
+  );
+
+  for (const [name, document] of [["README", readme], ["skill", skill]]) {
+    for (const required of [
+      "bootstrap --site-url",
+      "authorization_required",
+      "compatible",
+      "capability_unavailable"
+    ]) {
+      assert.ok(document.includes(required), `${name} missing ${required}`);
+    }
+    assert.doesNotMatch(
+      document,
+      /moodle-changefeed\s+[^\n`]*--(?:token|moodle-token|webservice-token)\b/i,
+      `${name} must not instruct users to pass a token in argv`
+    );
+  }
+  assert.doesNotMatch(
+    readme.replace(readmeApi, ""),
+    /authorization_required|compatible(?:_no_courses)?|capability_unavailable/,
+    "README machine codes belong only in its API section"
+  );
+  assert.doesNotMatch(
+    skill.replace(skillApi, ""),
+    /authorization_required|compatible(?:_no_courses)?|capability_unavailable/,
+    "skill machine codes belong only in its API section"
+  );
+});
+
 test("public docs and repository policy contain release safety boundaries", async () => {
   const [readme, security, license, ignore, workflow] = await Promise.all([
     text("README.md"),
@@ -67,6 +139,11 @@ test("public docs and repository policy contain release safety boundaries", asyn
   }
   assert.match(readme, /not legal advice/i);
   assert.match(security, /never.*write.*Moodle|Moodle writes.*unsupported/is);
+  assert.match(security, /credentials are site-bound/i);
+  assert.match(security, /foreign site.*anonymous-only/is);
+  assert.match(security, /must not.*credentials configured for another site/is);
+  assert.match(security, /at most three redirects[\s\S]*exact original origin/i);
+  assert.match(security, /fixed invalid sentinel[\s\S]*never substitutes a real token/i);
   assert.match(license, /Copyright \(c\) 2026 moodle-changefeed contributors/);
   for (const pattern of [".env*", "*.sqlite*", "node_modules/", "cache/", "staging/", "*.tgz"] ) {
     assert.ok(ignore.includes(pattern), `missing ignore pattern: ${pattern}`);

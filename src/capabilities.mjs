@@ -39,6 +39,16 @@ const CAPABILITY_GROUPS = Object.freeze([
   }
 ]);
 
+const NEXT_BY_CONNECTION_STATUS = Object.freeze({
+  site_url_required: "configure_site",
+  authorization_required: "authorize",
+  compatible: "sync",
+  compatible_no_courses: "sync",
+  invalid_site_url: "configure_site",
+  unsupported_site: "choose_another_site",
+  temporarily_unreachable: "retry_later"
+});
+
 function encodeCursor(offset) {
   return Buffer.from(JSON.stringify({ schemaVersion: 1, offset }), "utf8").toString("base64url");
 }
@@ -82,7 +92,7 @@ export function listMoodleChangefeedCapabilities({ group, cursor, limit = 5 } = 
   };
 }
 
-export async function buildMoodleAgentBootstrap({ publicConfig, runtime }) {
+export async function buildMoodleAgentBootstrap({ publicConfig, runtime, connection }) {
   const status = runtime
     ? await runtime.service.getStatus()
     : {
@@ -91,6 +101,14 @@ export async function buildMoodleAgentBootstrap({ publicConfig, runtime }) {
         objectCount: 0,
         resourceCount: 0
       };
+  const routing = {
+    capabilities: "list_moodle_changefeed_capabilities",
+    firstRead: "get_moodle_pipeline_status",
+    next: NEXT_BY_CONNECTION_STATUS[connection?.status] || "retry_later"
+  };
+  if (runtime && connection?.canScan === true) {
+    routing.firstSync = "scan_moodle_changes";
+  }
   return {
     schemaVersion: 1,
     package: { name: "moodle-changefeed", version: "0.1.0-dev.0" },
@@ -108,11 +126,8 @@ export async function buildMoodleAgentBootstrap({ publicConfig, runtime }) {
       webServiceToken: publicConfig?.credentialStatus?.webServiceToken || "unknown",
       icsUrl: publicConfig?.credentialStatus?.icsUrl || "unknown"
     },
-    routing: {
-      capabilities: "list_moodle_changefeed_capabilities",
-      firstRead: "get_moodle_pipeline_status",
-      firstSync: "scan_moodle_changes"
-    },
+    connection,
+    routing,
     commandHints: {
       demo: "moodle-changefeed demo --fixture anonymous/basic",
       bootstrap: "moodle-changefeed bootstrap"

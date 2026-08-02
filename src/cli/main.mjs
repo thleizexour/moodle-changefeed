@@ -20,6 +20,7 @@ import { diffMoodleObjects } from "../core/diff.mjs";
 import { MoodlePipelineStore } from "../core/ledger.mjs";
 import { normalizeMoodleSnapshot } from "../core/normalize.mjs";
 import { MoodlePipelineService } from "../core/service.mjs";
+import { probeMoodleEntry } from "../entry-probe.mjs";
 import {
   createStandaloneRuntime,
   invokeRuntimeCommand
@@ -28,6 +29,15 @@ import { CLI_HELP, parseCli } from "./parse.mjs";
 
 const PACKAGE_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const DEMO_NOW = Date.parse("2026-08-01T00:10:00.000Z");
+const NEXT_BY_STATUS = Object.freeze({
+  site_url_required: "configure_site",
+  authorization_required: "authorize",
+  compatible: "sync",
+  compatible_no_courses: "sync",
+  invalid_site_url: "configure_site",
+  unsupported_site: "choose_another_site",
+  temporarily_unreachable: "retry_later"
+});
 
 class SyntheticDemoConfirmationProvider extends MemoryConfirmationProvider {}
 
@@ -168,6 +178,43 @@ function writeJson(stream, value) {
   stream.write(`${JSON.stringify(value)}\n`);
 }
 
+function bootstrapResult({ config, connection, env, siteUrl }) {
+  return {
+    schemaVersion: 1,
+    package: "moodle-changefeed",
+    siteConfigured: Boolean(config?.siteUrl || siteUrl),
+    credentialStatus: config?.credentialStatus || {
+      webServiceToken: env.MOODLE_CHANGEFEED_TOKEN ? "configured" : "missing",
+      icsUrl: env.MOODLE_CHANGEFEED_ICS_URL ? "configured" : "missing"
+    },
+    writeEnabled: config?.writeEnabled ?? (env.MOODLE_CHANGEFEED_WRITE_ENABLED === "true"),
+    connection,
+    next: NEXT_BY_STATUS[connection.status]
+  };
+}
+
+function isInvalidSiteConfigError(error) {
+  return error instanceof TypeError && /^Moodle site\b/.test(String(error.message));
+}
+
+function createSiteBoundEnvironmentCredentialProvider(env, siteUrl) {
+  const unbound = Object.freeze({
+    siteKey: null,
+    async getWebServiceToken() {
+      return null;
+    },
+    async getIcsUrl() {
+      return null;
+    }
+  });
+  try {
+    const provider = createEnvironmentCredentialProvider(env);
+    return provider.siteKey === siteUrl ? provider : unbound;
+  } catch {
+    return unbound;
+  }
+}
+
 export async function runCli({
   argv = process.argv.slice(2),
   env = process.env,
@@ -175,7 +222,9 @@ export async function runCli({
   input = process.stdin,
   output = process.stdout,
   confirmationProvider = null,
-  fetchImpl = globalThis.fetch
+  fetchImpl = globalThis.fetch,
+  probeEntry = probeMoodleEntry,
+  createRuntime = createStandaloneRuntime
 } = {}) {
   const parsed = parseCli(argv);
   if (parsed.command === "help") {
@@ -187,20 +236,47 @@ export async function runCli({
     writeJson(output, result);
     return result;
   }
-  const config = loadPublicConfig({ argv: parsed.configArgv, env, cwd });
-  if (parsed.command === "bootstrap") {
-    const result = {
-      schemaVersion: 1,
-      package: "moodle-changefeed",
-      siteConfigured: Boolean(config.siteUrl),
-      credentialStatus: config.credentialStatus,
-      writeEnabled: config.writeEnabled,
-      next: config.siteUrl && config.credentialStatus.webServiceToken === "configured"
-        ? "sync"
-        : "configure_site_and_token"
-    };
+  const requestedSiteUrl = parsed.siteUrl ?? env.MOODLE_CHANGEFEED_SITE_URL ?? null;
+  let config;
+  try {
+    config = loadPublicConfig({ argv: parsed.configArgv, env, cwd });
+  } catch (error) {
+    if (!["bootstrap", "sync"].includes(parsed.command) || !isInvalidSiteConfigError(error)) {
+      throw error;
+    }
+    const connection = await probeEntry({
+      siteUrl: requestedSiteUrl,
+      credentialProvider: null,
+      fetchImpl
+    });
+    const result = parsed.command === "bootstrap"
+      ? bootstrapResult({ config: null, connection, env, siteUrl: requestedSiteUrl })
+      : { schemaVersion: 1, connection };
     writeJson(output, result);
     return result;
+  }
+  const credentialProvider = createSiteBoundEnvironmentCredentialProvider(env, config.siteUrl);
+  if (parsed.command === "bootstrap") {
+    const connection = await probeEntry({
+      siteUrl: config.siteUrl,
+      credentialProvider,
+      fetchImpl
+    });
+    const result = bootstrapResult({ config, connection, env, siteUrl: requestedSiteUrl });
+    writeJson(output, result);
+    return result;
+  }
+  if (parsed.command === "sync") {
+    const connection = await probeEntry({
+      siteUrl: config.siteUrl,
+      credentialProvider,
+      fetchImpl
+    });
+    if (!connection.canScan) {
+      const result = { schemaVersion: 1, connection };
+      writeJson(output, result);
+      return result;
+    }
   }
   if (!config.siteUrl) throw new TypeError("Moodle site URL is required");
 
@@ -209,8 +285,8 @@ export async function runCli({
   const interactiveProvider = usesCliPrompt
     ? new MemoryConfirmationProvider()
     : confirmationProvider;
-  const runtime = createStandaloneRuntime(config, {
-    credentialProvider: createEnvironmentCredentialProvider(env),
+  const runtime = createRuntime(config, {
+    credentialProvider,
     confirmationProvider: interactiveProvider,
     fetchImpl
   });

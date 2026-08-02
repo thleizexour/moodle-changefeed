@@ -2,11 +2,15 @@
 
 ## Supported scope
 
-`moodle-changefeed` supports read-only Moodle Web Service and optional ICS inputs. Moodle writes, assignment submissions, arbitrary function calls, redirect following, and access-control bypasses are unsupported. The local archive is the only bundled write target.
+`moodle-changefeed` supports read-only Moodle Web Service and optional ICS inputs. Moodle writes, assignment submissions, arbitrary function calls, unbounded redirects, cross-origin redirects, HTTPS downgrades, and access-control bypasses are unsupported. Entry probes may follow at most three redirects, and only when every target remains HTTPS on the exact original origin; loops and missing locations are rejected. The local archive is the only bundled write target.
 
 ## Local sensitive data
 
 Treat environment variables, private ICS URLs, the SQLite ledger and WAL files, cache and staging directories, downloaded course files, archive output, and debug logs as sensitive. Keep them outside repositories and shared folders. Use operating-system secret storage or a host credential provider where possible.
+
+Credentials are site-bound. A credential provider may return a Web Service token or private ICS URL only for the exact normalized Moodle site for which it was stored. Bootstrap probes for a foreign site are anonymous-only: they must not receive or forward credentials configured for another site.
+
+The anonymous REST compatibility fallback sends only the package's fixed invalid sentinel `moodle-changefeed-public-probe`. It never substitutes a real token or any configured credential, and the sentinel is not an authorization credential.
 
 Public feed, plan, and receipt contracts redact credentials, download locators, source bodies, and absolute paths. Reports and examples must use anonymous fixtures. Never write a Moodle token to argv, configuration files, the ledger, logs, or issue reports.
 

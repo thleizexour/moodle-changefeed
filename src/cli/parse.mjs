@@ -11,6 +11,7 @@ const CONFIG_VALUE_FLAGS = new Set([
 function splitConfigArgs(argv) {
   const commandArgv = [];
   const configArgv = [];
+  let siteUrl;
   for (let index = 0; index < argv.length; index += 1) {
     const raw = argv[index];
     if (/^--(?:token|moodle-token|webservice-token|ics-url)(?:=|$)/i.test(raw)) {
@@ -24,13 +25,16 @@ function splitConfigArgs(argv) {
       continue;
     }
     configArgv.push(raw);
-    if (!raw.includes("=")) {
+    if (raw.includes("=")) {
+      if (flag === "--site-url") siteUrl = raw.slice(raw.indexOf("=") + 1);
+    } else {
       const value = argv[++index];
       if (value === undefined) throw new TypeError(`${flag} requires a value`);
       configArgv.push(value);
+      if (flag === "--site-url") siteUrl = value;
     }
   }
-  return { commandArgv, configArgv };
+  return { commandArgv, configArgv, siteUrl };
 }
 
 function parseOptions(argv, definitions) {
@@ -74,15 +78,19 @@ function requireId(value, label) {
 
 export function parseCli(argv = []) {
   if (!Array.isArray(argv)) throw new TypeError("argv must be an array");
-  const { commandArgv, configArgv } = splitConfigArgs(argv);
+  const { commandArgv, configArgv, siteUrl } = splitConfigArgs(argv);
   const [first = "help", second, third, ...rest] = commandArgv;
 
   if (["help", "--help", "-h"].includes(first)) {
     if (commandArgv.length > 1) throw new TypeError("help does not accept arguments");
     return { command: "help", input: {}, configArgv };
   }
-  if (first === "bootstrap" || first === "status") {
-    if (commandArgv.length > 1) throw new TypeError(`${first} does not accept arguments`);
+  if (first === "bootstrap") {
+    if (commandArgv.length > 1) throw new TypeError("bootstrap does not accept arguments");
+    return { command: first, input: {}, configArgv, siteUrl };
+  }
+  if (first === "status") {
+    if (commandArgv.length > 1) throw new TypeError("status does not accept arguments");
     return { command: first, input: {}, configArgv };
   }
   if (first === "sync") {
@@ -91,7 +99,8 @@ export function parseCli(argv = []) {
       input: parseOptions(commandArgv.slice(1), {
         "--course-id": { key: "courseIds", kind: "string", multiple: true }
       }),
-      configArgv
+      configArgv,
+      siteUrl
     };
   }
   if (first === "feed") {

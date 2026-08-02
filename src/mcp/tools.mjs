@@ -2,7 +2,8 @@ import { z } from "zod";
 
 import {
   moodleFeedQuerySchema,
-  moodleReviewActionSchema
+  moodleReviewActionSchema,
+  canonicalSiteKey
 } from "../core/contracts.mjs";
 import {
   buildMoodleAgentBootstrap,
@@ -43,6 +44,9 @@ const capabilitySchema = z.object({
   group: z.enum(["source", "changefeed", "review", "cache", "delivery"]).optional(),
   cursor: z.string().max(128).optional(),
   limit: z.number().int().min(1).max(5).default(5)
+}).strict();
+const bootstrapSchema = z.object({
+  siteUrl: z.string().min(8).max(2048).optional()
 }).strict();
 
 export async function invokeMoodleTool(runtime, name, input = {}) {
@@ -86,9 +90,15 @@ async function withRuntime(createRuntime, operation) {
   }
 }
 
-export function registerMoodleChangefeedTools({ server, createRuntime, publicConfig }) {
-  if (!server || typeof createRuntime !== "function") {
-    throw new TypeError("server and createRuntime are required");
+export function registerMoodleChangefeedTools({
+  server,
+  createRuntime,
+  publicConfig,
+  probeEntry,
+  defaultSiteUrl = null
+}) {
+  if (!server || typeof createRuntime !== "function" || typeof probeEntry !== "function") {
+    throw new TypeError("server, createRuntime, and probeEntry are required");
   }
 
   server.registerTool(
@@ -96,14 +106,37 @@ export function registerMoodleChangefeedTools({ server, createRuntime, publicCon
     {
       title: "Bootstrap Moodle changefeed agent",
       description: "Return compact health, safety boundaries, and deterministic routing hints.",
-      inputSchema: z.object({}).strict(),
-      annotations: { readOnlyHint: true, openWorldHint: false }
+      inputSchema: bootstrapSchema,
+      annotations: { readOnlyHint: true, openWorldHint: true }
     },
-    async () => {
+    async (input) => {
       let runtime;
       try {
-        runtime = publicConfig?.siteUrl ? await createRuntime() : null;
-        return textResult(await buildMoodleAgentBootstrap({ publicConfig, runtime }));
+        const configuredSiteUrl = publicConfig?.siteUrl || null;
+        const rawRequestedSiteUrl = input.siteUrl ?? defaultSiteUrl ?? configuredSiteUrl;
+        let requestedSiteUrl = rawRequestedSiteUrl;
+        try {
+          requestedSiteUrl = rawRequestedSiteUrl ? canonicalSiteKey(rawRequestedSiteUrl) : null;
+        } catch {
+          // The entry probe returns the bounded invalid_site_url contract.
+        }
+        const matchesConfiguredSite = Boolean(
+          requestedSiteUrl &&
+          configuredSiteUrl &&
+          requestedSiteUrl === canonicalSiteKey(configuredSiteUrl)
+        );
+        const connection = await probeEntry({
+          siteUrl: requestedSiteUrl,
+          useConfiguredCredential: matchesConfiguredSite
+        });
+        runtime = connection?.canScan === true && matchesConfiguredSite
+          ? await createRuntime()
+          : null;
+        return textResult(await buildMoodleAgentBootstrap({
+          publicConfig,
+          runtime,
+          connection
+        }));
       } catch (error) {
         return errorResult(error);
       } finally {

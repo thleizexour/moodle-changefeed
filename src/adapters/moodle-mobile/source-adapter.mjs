@@ -1,6 +1,9 @@
 import { MoodleWebServiceError } from "./client.mjs";
 
 function errorCode(error) {
+  if (error?.code === "capability_unavailable") {
+    return "capability_unavailable";
+  }
   return error instanceof MoodleWebServiceError
     ? error.errorCode || "request_failed"
     : error?.errorCode || "request_failed";

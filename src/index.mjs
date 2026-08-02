@@ -2,6 +2,7 @@ export const MOODLE_CHANGEFEED_PACKAGE_VERSION = "0.1.0-dev.0";
 
 export * from "./capabilities.mjs";
 export * from "./config.mjs";
+export * from "./entry-probe.mjs";
 export * from "./adapters/moodle-ics/index.mjs";
 export * from "./adapters/local-archive/index.mjs";
 export * from "./adapters/moodle-mobile/index.mjs";

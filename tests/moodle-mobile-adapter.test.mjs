@@ -64,6 +64,72 @@ test("client uses provider credentials without exposing token or following redir
   assert.equal(new URL(requests[0].url).searchParams.get("token"), token);
 });
 
+test("client standardizes unavailable optional Moodle capabilities without exposing server text", async () => {
+  const client = new MoodleMobileClient({
+    siteKey: "https://moodle.example.edu",
+    credentialProvider: { async getWebServiceToken() { return "secret"; } },
+    fetchImpl: async () => Response.json({
+      exception: "dml_missing_record_exception",
+      errorcode: "wsfunctionnotavailable",
+      message: "sensitive server text that must not escape"
+    })
+  });
+
+  await assert.rejects(
+    client.call("mod_assign_get_assignments", { courseids: [42] }),
+    (error) =>
+      error.code === "capability_unavailable" &&
+      error.errorCode === "wsfunctionnotavailable" &&
+      !error.message.includes("sensitive server text that must not escape")
+  );
+});
+
+test("client preserves non-optional and transient Moodle failures", async () => {
+  const unavailableCoreClient = new MoodleMobileClient({
+    siteKey: "https://moodle.example.edu",
+    credentialProvider: { async getWebServiceToken() { return "secret"; } },
+    fetchImpl: async () => Response.json({
+      exception: "dml_missing_record_exception",
+      errorcode: "wsfunctionnotavailable",
+      message: "sensitive server text that must not escape"
+    })
+  });
+  await assert.rejects(
+    unavailableCoreClient.getSiteInfo(),
+    (error) =>
+      error.code === "moodle_request_failed" &&
+      error.errorCode === "wsfunctionnotavailable" &&
+      !error.message.includes("sensitive server text that must not escape")
+  );
+
+  for (const [name, response] of [
+    ["invalid parameters", Response.json({ exception: "invalid_parameter_exception", errorcode: "invalidparameter" })],
+    ["rate limited", new Response(null, { status: 429 })],
+    ["server failure", new Response(null, { status: 503 })]
+  ]) {
+    const client = new MoodleMobileClient({
+      siteKey: "https://moodle.example.edu",
+      credentialProvider: { async getWebServiceToken() { return "secret"; } },
+      fetchImpl: async () => response
+    });
+    await assert.rejects(
+      client.call("mod_assign_get_assignments", { courseids: [42] }),
+      (error) => error.code === "moodle_request_failed",
+      name
+    );
+  }
+
+  const timeoutClient = new MoodleMobileClient({
+    siteKey: "https://moodle.example.edu",
+    credentialProvider: { async getWebServiceToken() { return "secret"; } },
+    fetchImpl: async () => { throw new Error("timeout"); }
+  });
+  await assert.rejects(
+    timeoutClient.call("mod_assign_get_assignments", { courseids: [42] }),
+    (error) => error.code === "moodle_request_failed"
+  );
+});
+
 test("optional failures degrade only their Moodle domain", async () => {
   const client = {
     siteKey: "https://moodle.example.edu",
@@ -93,4 +159,47 @@ test("optional failures degrade only their Moodle domain", async () => {
   });
   assert.equal(result.siteKey, "https://moodle.example.edu");
   assert.doesNotMatch(JSON.stringify(result), /private-token|wstoken/);
+});
+
+test("source adapter continues after an unavailable optional capability", async () => {
+  const client = new MoodleMobileClient({
+    siteKey: "https://moodle.example.edu",
+    credentialProvider: { async getWebServiceToken() { return "secret"; } },
+    fetchImpl: async (_url, options) => {
+      switch (options.body.get("wsfunction")) {
+        case "core_webservice_get_site_info":
+          return Response.json({ userid: 7 });
+        case "core_enrol_get_users_courses":
+          return Response.json([{ id: 42, shortname: "EXAMPLE42", fullname: "Example course" }]);
+        case "core_course_get_contents":
+          return Response.json([{ id: 1, modules: [] }]);
+        case "mod_assign_get_assignments":
+          return Response.json({
+            exception: "dml_missing_record_exception",
+            errorcode: "wsfunctionnotavailable",
+            message: "sensitive server text that must not escape"
+          });
+        case "mod_forum_get_forums_by_courses":
+          return Response.json([]);
+        default:
+          throw new Error("unexpected function");
+      }
+    }
+  });
+
+  const result = await new MoodleMobileSourceAdapter({ client, retryDelayMs: 0 }).collect({
+    capturedAt: "2026-08-01T00:00:00.000Z"
+  });
+
+  assert.equal(result.complete, false);
+  assert.deepEqual(result.health.completeness, {
+    resources: true,
+    assignments: false,
+    announcements: true
+  });
+  assert.deepEqual(result.health.errors, [{
+    courseId: "42",
+    errorCode: "capability_unavailable"
+  }]);
+  assert.doesNotMatch(JSON.stringify(result), /sensitive server text that must not escape/);
 });

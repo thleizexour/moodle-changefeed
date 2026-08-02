@@ -63,11 +63,25 @@ function parseConfigArgv(argv) {
   return values;
 }
 
-export function loadPublicConfig({ argv = [], env = process.env, cwd = process.cwd() } = {}) {
+function loadPublicConfigState({
+  argv = [],
+  env = process.env,
+  cwd = process.cwd(),
+  allowInvalidSite = false
+} = {}) {
   if (!Array.isArray(argv)) throw new TypeError("argv must be an array");
   const flags = parseConfigArgv(argv);
   const siteValue = flags.siteUrl || env.MOODLE_CHANGEFEED_SITE_URL || null;
-  const siteUrl = siteValue ? canonicalSiteKey(siteValue) : null;
+  let siteUrl = null;
+  let invalidSite = false;
+  if (siteValue) {
+    try {
+      siteUrl = canonicalSiteKey(siteValue);
+    } catch (error) {
+      if (!allowInvalidSite) throw error;
+      invalidSite = true;
+    }
+  }
   const dataDir = flags.dataDir
     ? resolveDirectory(flags.dataDir, cwd)
     : defaultDataDir({ env, cwd });
@@ -84,7 +98,7 @@ export function loadPublicConfig({ argv = [], env = process.env, cwd = process.c
     throw new TypeError("domains must contain assignments, resources, or announcements");
   }
 
-  return Object.freeze({
+  const publicConfig = Object.freeze({
     schemaVersion: 1,
     siteUrl,
     dataDir,
@@ -110,14 +124,26 @@ export function loadPublicConfig({ argv = [], env = process.env, cwd = process.c
     ),
     writeEnabled: env.MOODLE_CHANGEFEED_WRITE_ENABLED === "true",
     credentialStatus: Object.freeze({
-      webServiceToken: env.MOODLE_CHANGEFEED_TOKEN ? "configured" : "missing",
-      icsUrl: env.MOODLE_CHANGEFEED_ICS_URL ? "configured" : "missing"
+      webServiceToken: !invalidSite && env.MOODLE_CHANGEFEED_TOKEN ? "configured" : "missing",
+      icsUrl: !invalidSite && env.MOODLE_CHANGEFEED_ICS_URL ? "configured" : "missing"
     })
   });
+  return Object.freeze({ publicConfig, requestedSiteUrl: siteValue });
+}
+
+export function loadPublicConfig(options = {}) {
+  return loadPublicConfigState(options).publicConfig;
+}
+
+export function loadEntryPublicConfig(options = {}) {
+  return loadPublicConfigState({ ...options, allowInvalidSite: true });
 }
 
 export function createEnvironmentCredentialProvider(env = process.env) {
   return Object.freeze({
+    siteKey: env.MOODLE_CHANGEFEED_SITE_URL
+      ? canonicalSiteKey(env.MOODLE_CHANGEFEED_SITE_URL)
+      : null,
     async getWebServiceToken() {
       return env.MOODLE_CHANGEFEED_TOKEN || null;
     },
